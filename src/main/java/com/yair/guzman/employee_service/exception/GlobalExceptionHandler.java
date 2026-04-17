@@ -2,13 +2,14 @@ package com.yair.guzman.employee_service.exception;
 
 import com.yair.guzman.employee_service.dto.ErrorResponseDTO;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -48,6 +49,18 @@ public class GlobalExceptionHandler {
                         fieldErrors));
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBadCredentials(BadCredentialsException ex,
+                                                                  HttpServletRequest request) {
+        log.warn("Bad credentials — path={}", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now(), 401,
+                        "Invalid username or password",
+                        request.getRequestURI(),
+                        null));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGeneric(Exception ex, HttpServletRequest request) {
         log.error("Unexpected error — path={}", request.getRequestURI(), ex);
@@ -59,4 +72,3 @@ public class GlobalExceptionHandler {
                         null));
     }
 }
-

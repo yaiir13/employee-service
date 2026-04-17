@@ -21,7 +21,7 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: validate
-    defer-datasource-initialization: true
+    defer-datasource-initialization: false   # schema.sql runs BEFORE Hibernate → tables exist at validation time
     show-sql: true
     properties:
       hibernate:
@@ -37,6 +37,12 @@ springdoc:
     tags-sorter: alpha
     operations-sorter: alpha
   show-actuator: false
+
+# ── JWT ───────────────────────────────────────────────────────────────────────
+jwt:
+  # 256-bit Base64-encoded secret — change this in production via environment variable
+  secret: "ZW1wbG95ZWUtc2VydmljZS1zdXBlci1zZWNyZXQta2V5LTI1NmJpdHMhISE="
+  expiration-ms: 86400000        # 24 hours in milliseconds
 
 # ── Logging ──────────────────────────────────────────────────────────────────
 logging:
@@ -59,4 +65,3 @@ logging:
       max-history: 30                                                  # keep last 30 rolled files
       total-size-cap: 300MB                                            # purge oldest when total exceeds 300 MB
       file-name-pattern: logs/employee-service.%d{yyyy-MM-dd}.%i.log.gz  # gzip-compressed rotated files
-

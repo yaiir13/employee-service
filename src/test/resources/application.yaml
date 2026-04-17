@@ -1,0 +1,37 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  sql:
+    init:
+      mode: never                  # do NOT run schema.sql / data.sql during tests
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop        # Hibernate creates schema from entities, drops on shutdown
+    defer-datasource-initialization: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  h2:
+    console:
+      enabled: false
+
+# Silence noisy logs during tests
+logging:
+  level:
+    root: WARN
+    com.yair.guzman.employee_service: INFO
+    org.hibernate.SQL: WARN
+
+# JWT config required for context to load
+jwt:
+  secret: "ZW1wbG95ZWUtc2VydmljZS1zdXBlci1zZWNyZXQta2V5LTI1NmJpdHMhISE="
+  expiration-ms: 86400000
+
