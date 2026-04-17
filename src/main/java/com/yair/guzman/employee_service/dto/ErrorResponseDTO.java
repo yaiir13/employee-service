@@ -10,4 +10,3 @@ public record ErrorResponseDTO(
         String path,
         Map<String, String> fieldErrors
 ) {}
-

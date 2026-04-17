@@ -51,7 +51,7 @@ public class  EmployeeMapper {
         if (dto.status() != null) employee.setStatus(dto.status());
     }
 
-    /** Partial update — used by PATCH (only non-null fields are applied) */
+    /** Partial update — used by PATCH */
     public void partialUpdateEntity(Employee employee, EmployeeRequestDTO dto) {
         if (dto.firstName()      != null) employee.setFirstName(dto.firstName());
         if (dto.middleName()     != null) employee.setMiddleName(dto.middleName());
@@ -64,4 +64,3 @@ public class  EmployeeMapper {
         if (dto.status()         != null) employee.setStatus(dto.status());
     }
 }
-

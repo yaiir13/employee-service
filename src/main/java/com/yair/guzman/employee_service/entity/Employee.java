@@ -8,9 +8,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * Employee entity representing a company employee.
- */
 @Entity
 @Table(name = "employees")
 @Getter
@@ -75,4 +72,3 @@ public class Employee {
     @Column(name = "status", nullable = false)
     private boolean status = true;
 }
-

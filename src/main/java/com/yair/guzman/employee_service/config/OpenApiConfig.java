@@ -46,6 +46,3 @@ public class OpenApiConfig {
                                 .description("Paste your JWT token here (without the 'Bearer' prefix)")));
     }
 }
-
-
-

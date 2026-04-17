@@ -33,35 +33,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-
         final String authHeader = request.getHeader(AUTH_HEADER);
-
-        // No token → let request continue (SecurityConfig blocks protected endpoints)
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }
-
         final String token    = authHeader.substring(BEARER_PREFIX.length());
         final String username = jwtService.extractUsername(token);
-
-        // Only authenticate if username extracted and not already authenticated
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
             if (jwtService.isTokenValid(token, userDetails)) {
                 log.debug("JWT valid for user '{}' — setting SecurityContext", username);
-
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities());
-
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-
         filterChain.doFilter(request, response);
     }
 }
-

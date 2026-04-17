@@ -27,13 +27,11 @@ public class JwtService {
         this.expirationMs = expirationMs;
     }
 
-    /** Generate a signed JWT for a given user with an extra 'role' claim. */
     public String generateToken(UserDetails userDetails) {
         String role = userDetails.getAuthorities().stream()
                 .findFirst()
                 .map(Object::toString)
                 .orElse("ROLE_USER");
-
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .claims(Map.of("role", role))
@@ -43,12 +41,10 @@ public class JwtService {
                 .compact();
     }
 
-    /** Extract the username (subject) from a token. */
     public String extractUsername(String token) {
         return parseClaims(token).getSubject();
     }
 
-    /** Validate token: username must match and token must not be expired. */
     public boolean isTokenValid(String token, UserDetails userDetails) {
         try {
             String username = extractUsername(token);
@@ -63,8 +59,6 @@ public class JwtService {
         return expirationMs;
     }
 
-    // ── private helpers ───────────────────────────────────────────────────────
-
     private boolean isExpired(String token) {
         return parseClaims(token).getExpiration().before(new Date());
     }
@@ -77,4 +71,3 @@ public class JwtService {
                 .getPayload();
     }
 }
-

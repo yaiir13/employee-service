@@ -14,4 +14,3 @@ public interface EmployeeService {
     void delete(Long id);
     List<EmployeeResponseDTO> searchByName(String name);
 }
-

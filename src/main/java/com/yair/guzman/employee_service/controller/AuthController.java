@@ -35,12 +35,10 @@ public class AuthController {
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password()));
-
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String token = jwtService.generateToken(userDetails);
         String role  = userDetails.getAuthorities().stream()
                 .findFirst().map(Object::toString).orElse("ROLE_USER");
-
         return ResponseEntity.ok(
                 new LoginResponseDTO(token, userDetails.getUsername(), role, jwtService.getExpirationMs()));
     }

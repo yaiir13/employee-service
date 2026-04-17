@@ -20,4 +20,3 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             """)
     List<Employee> searchByName(@Param("name") String name);
 }
-

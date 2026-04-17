@@ -28,7 +28,6 @@ public class SecurityConfig {
 
     private final AuthUserRepository authUserRepository;
 
-    // ── Public endpoints ──────────────────────────────────────────────────────
     private static final String[] PUBLIC_URLS = {
             "/api/v1/auth/**",
             "/swagger-ui/**",
@@ -66,11 +65,6 @@ public class SecurityConfig {
         return provider;
     }
 
-    /**
-     * Build the AuthenticationManager directly from our provider.
-     * Using ProviderManager instead of AuthenticationConfiguration avoids
-     * bean resolution issues in test contexts.
-     */
     @Bean
     public AuthenticationManager authenticationManager() {
         return new ProviderManager(authenticationProvider());
@@ -81,6 +75,3 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(12);
     }
 }
-
-
-

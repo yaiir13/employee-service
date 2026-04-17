@@ -2,42 +2,38 @@ name: CD — Docker Build & Push
 
 on:
   push:
-    branches: [ "main" ]           # only runs on merges to main
+    branches: [ "main" ]
   workflow_run:
     workflows: [ "CI — Build & Test" ]
-    types: [ completed ]           # waits for CI to finish successfully
+    types: [ completed ]
     branches: [ "main" ]
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}   # e.g. yairguzman/employee-service
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   docker-build-push:
     name: Build & Push Docker Image
     runs-on: ubuntu-latest
 
-    # Only run CD if the CI workflow succeeded (when triggered via workflow_run)
     if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
 
     permissions:
       contents: read
-      packages: write              # required to push to ghcr.io
+      packages: write
 
     steps:
 
-      # ── 1. Checkout ──────────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── 2. Set up JDK 21 (needed for the Gradle bootJar inside Docker build) ─
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
 
-      # ── 3. Cache Gradle (reused from CI — avoids re-downloading in Docker) ───
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
@@ -48,12 +44,9 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
-      # ── 4. Set up Docker Buildx (enables BuildKit + multi-platform support) ──
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # ── 5. Log in to GitHub Container Registry ───────────────────────────────
-      #       GITHUB_TOKEN is auto-injected by GitHub — no secrets to configure.
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -61,10 +54,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # ── 6. Extract Docker image metadata (tags + labels) ─────────────────────
-      #       Produces two tags:
-      #         ghcr.io/yairguzman/employee-service:latest
-      #         ghcr.io/yairguzman/employee-service:sha-abc1234
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -74,10 +63,6 @@ jobs:
             type=raw,value=latest
             type=sha,prefix=sha-
 
-      # ── 7. Build and push Docker image ───────���───────────────────────────────
-      #       Uses the multi-stage Dockerfile.
-      #       cache-from/cache-to: GitHub Actions cache for Docker layer caching
-      #       — first build downloads layers; subsequent builds restore them.
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
@@ -88,4 +73,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-

@@ -13,20 +13,15 @@ jobs:
 
     steps:
 
-      # ── 1. Checkout ──────────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── 2. Set up JDK 21 ─────────────────────────────────────────────────────
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
 
-      # ── 3. Cache Gradle dependencies ─────────────────────────────────────────
-      #       Key includes a hash of build files — cache is invalidated automatically
-      #       when dependencies change, otherwise restored for faster builds.
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
@@ -37,20 +32,15 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
-      # ── 4. Make gradlew executable ───────────────────────────────────────────
       - name: Grant execute permission to gradlew
         run: chmod +x gradlew
 
-      # ── 5. Build ─────────────────────────────────────────────────────────────
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
 
-      # ── 6. Run tests ─────────────────────────────────────────────────────────
       - name: Run tests
         run: ./gradlew test --no-daemon
 
-      # ── 7. Upload test report ────────────────────────────────────────────────
-      #       Runs even when tests fail so the report is always available.
       - name: Upload test report
         uses: actions/upload-artifact@v4
         if: always()
@@ -58,4 +48,3 @@ jobs:
           name: test-report
           path: build/reports/tests/test/
           retention-days: 7
-

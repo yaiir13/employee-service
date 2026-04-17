@@ -11,4 +11,3 @@ public record LoginResponseDTO(
         this(token, "Bearer", username, role, expiresIn);
     }
 }
-

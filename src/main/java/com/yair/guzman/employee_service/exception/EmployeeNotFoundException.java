@@ -6,4 +6,3 @@ public class EmployeeNotFoundException extends RuntimeException {
         super("Employee not found with id: " + id);
     }
 }
-
