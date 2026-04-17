@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -47,6 +48,14 @@ public class GlobalExceptionHandler {
                         "Validation failed",
                         request.getRequestURI(),
                         fieldErrors));
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleHandlerMethodValidation(HandlerMethodValidationException ex,
+                                                                          HttpServletRequest request) {
+        log.warn("Handler method validation failed — path={} status={}", request.getRequestURI(), ex.getStatusCode());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ErrorResponseDTO(LocalDateTime.now(), 400, "Validation failed", request.getRequestURI(), null));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
